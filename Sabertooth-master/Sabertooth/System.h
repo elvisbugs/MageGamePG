@@ -15,9 +15,9 @@
 #include <SOIL.h>
 
 // GLM Includes
-#include <glm\glm.hpp>
-#include <glm\gtc\matrix_transform.hpp>
-#include <glm\gtc\type_ptr.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // Headers
 #include "Shader.h"
@@ -28,12 +28,13 @@ class System
 {
 private:
 	// Screen
-	const GLint WIDTH = 600, HEIGHT = 600;
+	const GLint WIDTH = 1152, HEIGHT = 922;
 	int screenWidth, screenHeight;
 
 public:
 	GLFWwindow* window;
 	Shader coreShader;
+	Shader coreShader2;
 
 public:
 	System();
@@ -46,6 +47,8 @@ public:
 	void Run();
 
 	void Finish();
+
+	void delay(int milliSeconds);
 
 };
 

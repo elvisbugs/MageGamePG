@@ -1,7 +1,5 @@
 #include "System.h"
 
-
-
 System::System()
 {
 }
@@ -11,9 +9,14 @@ System::~System()
 {
 }
 
+void System::delay(int milliSeconds)
+{
+	clock_t start_time = clock();
+	while (clock() < start_time + milliSeconds);
+};
+
 int System::GLFWInit()
 {
-
 	glfwInit();
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
@@ -66,21 +69,36 @@ int System::OpenGLSetup()
 int System::SystemSetup()
 {
 
-	coreShader = Shader( "Shaders/Core/core.vert", "Shaders/Core/core.frag", 2.0f, 2.0f, -0.5f);
-	coreShader.Use();
+	coreShader = Shader( "Shaders/Core/core.vert", "Shaders/Core/core.frag", 8.46, 2, 0.0f);
+
+	coreShader2 = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 1.76, 0.64, -1.0f);
+
+	coreShader.useShader();
+
+	coreShader2.useShader();
 
 	return EXIT_SUCCESS;
 }
 
 void System::Run()
 {
+	coreShader.useShader();
 
-	coreShader.Use();
-	coreShader.LoadTexture( "bin/Images/woodTexture.jpg", "texture1", "woodTexture" );
+	coreShader.loadTexture( "bin/assets/Background/layer_0.png", "texture1", "layer_0" );
 
-	if (!coreShader.BindVAO())
+	if (!coreShader.bindVAO())
+		return;
+
+	coreShader2.useShader();
+	coreShader2.loadTexture("bin/assets/Mage/mage_fire.png", "texture1", "mage_fire");
+	coreShader2.loadTexture("bin/assets/Mage/mage_water.png", "texture2", "mage_water");
+	coreShader2.loadTexture("bin/assets/Mage/mage_wind.png", "texture3", "mage_wind");
+
+	if (!coreShader2.bindVAO())
 		return;
 	
+	int teste = 1;
+
 	while ( !glfwWindowShouldClose( window ) ) {
 
 		glfwPollEvents();
@@ -96,24 +114,60 @@ void System::Run()
 		glClearColor( 0.2f, 0.3f, 0.3f, 1.0f );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-		coreShader.Use();
-
-		coreShader.UseTexture( "woodTexture" );
-
+		//background update
+		coreShader.useShader();
+		coreShader.useTexture( "layer_0" );
 		glBindVertexArray(coreShader.getVAO());
 		glDrawArrays( GL_TRIANGLES, 0, 6 );
 		glBindVertexArray( 0 );
-		
 
+		//Mage update
+		coreShader2.useShader();
+		
+		if (teste == 1) {
+			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
+			textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
+			glUniform1i(textureActive, 1);
+			coreShader2.useTexture("mage_fire");
+			glBindVertexArray(coreShader2.getVAO());
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glBindVertexArray(0);
+		}
+
+		else if (teste == 2)
+		{
+			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
+			textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
+			glUniform1i(textureActive, 2);
+			coreShader2.useTexture("mage_water");
+			glBindVertexArray(coreShader2.getVAO());
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glBindVertexArray(0);
+		}
+
+		else
+		{
+			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
+			textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
+			glUniform1i(textureActive, 3);
+			coreShader2.useTexture("mage_wind");
+			glBindVertexArray(coreShader2.getVAO());
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glBindVertexArray(0);
+		}
+
+		if (teste == 1) teste = 2;
+		else if (teste == 2) teste = 3;
+		else teste = 1; 
+
+		delay(1000);
+		
 		glfwSwapBuffers( window );
 	}
-
-
 }
 
 void System::Finish()
 {
-	coreShader.Delete();
-
+	coreShader.deleteShader();
 	glfwTerminate();
 }

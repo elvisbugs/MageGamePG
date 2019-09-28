@@ -101,7 +101,7 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) : Shader() 
 	glDeleteShader(fragment);
 }
 
-Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltHeigth, GLfloat pFltWidth, GLfloat pFltLayer) : Shader(pChrVertexPath, pChrFragmentPath)
+Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer) : Shader(pChrVertexPath, pChrFragmentPath)
 {
 	//monta os vertices do shader
 	this->mFltVertices[0] = -1 + pFltWidth;			// x->top right
@@ -148,7 +148,7 @@ Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLf
 	this->mFltVertices[29] = this->mFltVertices[4];//y->top right
 }
 
-bool Shader::BindVAO()
+bool Shader::bindVAO()
 {
 	try
 	{
@@ -175,18 +175,19 @@ bool Shader::BindVAO()
 	}
 	catch (...)
 	{
+		std::cout << "Failed to Bind VAO!" << std::endl;
 		return false;
 	}
 	
 }
 
-void Shader::UseTexture( std::string textureName )
+void Shader::useTexture( std::string textureName )
 {
 	glActiveTexture( GL_TEXTURE0 + textures[textureName].GetTextureNum() );
 	glBindTexture( GL_TEXTURE_2D, textures[textureName].GetTextureId() );
 }
 
-void Shader::LoadTexture( char* path, char* textureUniformName, std::string textureName )
+void Shader::loadTexture( char* path, char* textureUniformName, std::string textureName )
 {
 	Texture tempTexture;
 	tempTexture.Load( path, textureUniformName, mIntProgramId, textureQtd );

@@ -5,13 +5,19 @@ layout ( location = 1 ) in vec2 texCoord;
 
 out vec2 TexCoord;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 transform;
+uniform bool doTransform = false;
 
 void main()
 {
-	gl_Position = vec4(vPosition, 1.0);
+	if(doTransform)
+	{
+		gl_Position = transform * vec4(vPosition, 1.0);
+	}
+	else
+	{
+		gl_Position = vec4(vPosition, 1.0);
+	}
 	
 	TexCoord = vec2( texCoord.x, 1.0 - texCoord.y );
 }

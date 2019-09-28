@@ -25,24 +25,27 @@ private:
 	std::map<std::string, Texture> textures;
 	GLint textureQtd;
 
-public:
 	GLfloat mFltVertices[30];
+
+public:
 
 	Shader() { textureQtd = 0; }
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
-	Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pIntHeigth, GLfloat pIntWidth, GLfloat pFltLayer);
+	Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer);
 
 	~Shader();
 
-	void Use(){glUseProgram( this->mIntProgramId);}
+	void useShader(){glUseProgram( this->mIntProgramId);}
 
-	void Delete() { glDeleteProgram(this->mIntProgramId);}
+	void deleteShader() { glDeleteProgram(this->mIntProgramId);}
 
-	void UseTexture( std::string textureName );
-	void LoadTexture( char* path, char* textureUniformName, std::string textureName );
+	void useTexture( std::string textureName );
+	void loadTexture( char* path, char* textureUniformName, std::string textureName );
 
-	bool BindVAO();
-	GLuint getVAO() { return this->mIntVAO;}
+	bool bindVAO();
+	GLuint getVAO() { return mIntVAO;}
+
+	GLuint getProgramId() { return mIntProgramId; }
 };
 
 #endif
