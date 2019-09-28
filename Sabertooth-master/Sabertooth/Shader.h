@@ -40,7 +40,7 @@ public:
 	void deleteShader() { glDeleteProgram(this->mIntProgramId);}
 
 	void useTexture( std::string textureName );
-	void loadTexture( char* path, char* textureUniformName, std::string textureName );
+	void loadTexture( char* path, char* textureUniformName, std::string textureName, bool pBlnRepeat);
 
 	bool bindVAO();
 	GLuint getVAO() { return mIntVAO;}

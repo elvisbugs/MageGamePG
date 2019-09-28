@@ -187,10 +187,10 @@ void Shader::useTexture( std::string textureName )
 	glBindTexture( GL_TEXTURE_2D, textures[textureName].GetTextureId() );
 }
 
-void Shader::loadTexture( char* path, char* textureUniformName, std::string textureName )
+void Shader::loadTexture( char* path, char* textureUniformName, std::string textureName, bool pBlnRepeat)
 {
 	Texture tempTexture;
-	tempTexture.Load( path, textureUniformName, mIntProgramId, textureQtd );
+	tempTexture.Load( path, textureUniformName, mIntProgramId, textureQtd, pBlnRepeat);
 	textures[textureName] = tempTexture;
 	textureQtd += 1;
 }

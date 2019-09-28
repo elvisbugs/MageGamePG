@@ -17,7 +17,7 @@ public:
 	Texture();
 	~Texture();
 
-	void Load( char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum );
+	void Load( char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum, bool pBlnRepeat);
 
 	GLuint GetTextureId() { return textureID; }
 	GLshort GetTextureNum() { return textureNum; }

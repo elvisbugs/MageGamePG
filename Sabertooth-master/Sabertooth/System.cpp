@@ -84,20 +84,21 @@ void System::Run()
 {
 	coreShader.useShader();
 
-	coreShader.loadTexture( "bin/assets/Background/layer_0.png", "texture1", "layer_0" );
+	coreShader.loadTexture( "bin/assets/Background/layer_0.png", "texture1", "layer_0", true );
 
 	if (!coreShader.bindVAO())
 		return;
 
 	coreShader2.useShader();
-	coreShader2.loadTexture("bin/assets/Mage/mage_fire.png", "texture1", "mage_fire");
-	coreShader2.loadTexture("bin/assets/Mage/mage_water.png", "texture2", "mage_water");
-	coreShader2.loadTexture("bin/assets/Mage/mage_wind.png", "texture3", "mage_wind");
+	coreShader2.loadTexture("bin/assets/Mage/mage_fire.png", "texture1", "mage_fire", false);
+	coreShader2.loadTexture("bin/assets/Mage/mage_water.png", "texture2", "mage_water", false);
+	coreShader2.loadTexture("bin/assets/Mage/mage_wind.png", "texture3", "mage_wind", false);
 
 	if (!coreShader2.bindVAO())
 		return;
 	
 	int teste = 1;
+	float offsetx = 0;
 
 	while ( !glfwWindowShouldClose( window ) ) {
 
@@ -116,17 +117,20 @@ void System::Run()
 
 		//background update
 		coreShader.useShader();
+
+		glUniform1f(glGetUniformLocation(coreShader.getProgramId(), "offsetx"), offsetx);
+		
 		coreShader.useTexture( "layer_0" );
 		glBindVertexArray(coreShader.getVAO());
 		glDrawArrays( GL_TRIANGLES, 0, 6 );
 		glBindVertexArray( 0 );
+		offsetx += 0.1;
 
 		//Mage update
 		coreShader2.useShader();
 		
 		if (teste == 1) {
 			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
-			textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
 			glUniform1i(textureActive, 1);
 			coreShader2.useTexture("mage_fire");
 			glBindVertexArray(coreShader2.getVAO());
@@ -137,7 +141,6 @@ void System::Run()
 		else if (teste == 2)
 		{
 			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
-			textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
 			glUniform1i(textureActive, 2);
 			coreShader2.useTexture("mage_water");
 			glBindVertexArray(coreShader2.getVAO());
@@ -148,7 +151,6 @@ void System::Run()
 		else
 		{
 			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
-			textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
 			glUniform1i(textureActive, 3);
 			coreShader2.useTexture("mage_wind");
 			glBindVertexArray(coreShader2.getVAO());
@@ -160,7 +162,7 @@ void System::Run()
 		else if (teste == 2) teste = 3;
 		else teste = 1; 
 
-		delay(1000);
+		delay(250);
 		
 		glfwSwapBuffers( window );
 	}
