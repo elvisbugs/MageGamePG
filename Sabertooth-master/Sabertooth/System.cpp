@@ -68,32 +68,52 @@ int System::OpenGLSetup()
 
 int System::SystemSetup()
 {
-
-	coreShader = Shader( "Shaders/Core/core.vert", "Shaders/Core/core.frag", 8.46, 2, 0.0f);
-
+	coreShader = Shader( "Shaders/Core/core.vert", "Shaders/Core/core.frag", 3.42, 2, -0.1f, -1.0, -0.7);
 	coreShader2 = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 1.76, 0.64, -1.0f);
+	ceu = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 2, 2, 0.0f, -1.0, -0.8);
+	nuvem = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 2, 0.33, -0.01f,-1.0,0.65);
+	grama = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 3.42, 2, -0.9f);
 
 	coreShader.useShader();
-
 	coreShader2.useShader();
+	ceu.useShader();
+	nuvem.useShader();
+	grama.useShader();
 
 	return EXIT_SUCCESS;
 }
 
 void System::Run()
 {
-	coreShader.useShader();
-
-	coreShader.loadTexture( "bin/assets/Background/layer_0.png", "texture1", "layer_0", true );
-
-	if (!coreShader.bindVAO())
+	//load grama
+	grama.useShader();
+	grama.loadTexture("bin/assets/Background/grama.png", "texture1", "layerGrama", true);
+	if (!grama.bindVAO())
 		return;
 
+	//load nuvem
+	nuvem.useShader();
+	nuvem.loadTexture("bin/assets/Background/nuvens.png", "texture1", "layerNuvem", true);
+	if (!nuvem.bindVAO())
+		return;
+
+	//load ceu
+	ceu.useShader();
+	ceu.loadTexture("bin/assets/Background/layer1.png", "texture1", "layer0", true);
+	if (!ceu.bindVAO())
+		return;
+
+	//load mountains
+	coreShader.useShader();
+	coreShader.loadTexture( "bin/assets/Background/layer0.png", "texture1", "layer1", true );
+	if (!coreShader.bindVAO())
+		return;
+	
+	//load mages
 	coreShader2.useShader();
 	coreShader2.loadTexture("bin/assets/Mage/mage_fire.png", "texture1", "mage_fire", false);
 	coreShader2.loadTexture("bin/assets/Mage/mage_water.png", "texture2", "mage_water", false);
 	coreShader2.loadTexture("bin/assets/Mage/mage_wind.png", "texture3", "mage_wind", false);
-
 	if (!coreShader2.bindVAO())
 		return;
 	
@@ -115,16 +135,37 @@ void System::Run()
 		glClearColor( 0.2f, 0.3f, 0.3f, 1.0f );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+
+		//ceu update
+		ceu.useShader();
+		ceu.useTexture("layer0");
+		glBindVertexArray(ceu.getVAO());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
+		//grama update
+		grama.useShader();
+		glUniform1f(glGetUniformLocation(grama.getProgramId(), "offsetx"), offsetx);
+		grama.useTexture("layerGrama");
+		glBindVertexArray(grama.getVAO());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
+		//nuvem update
+		nuvem.useShader();
+		glUniform1f(glGetUniformLocation(nuvem.getProgramId(), "offsetx"), offsetx/100);
+		nuvem.useTexture("layerNuvem");
+		glBindVertexArray(nuvem.getVAO());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
 		//background update
 		coreShader.useShader();
-
-		glUniform1f(glGetUniformLocation(coreShader.getProgramId(), "offsetx"), offsetx);
-		
-		coreShader.useTexture( "layer_0" );
+		glUniform1f(glGetUniformLocation(coreShader.getProgramId(), "offsetx"), offsetx/60);
+		coreShader.useTexture( "layer1" );
 		glBindVertexArray(coreShader.getVAO());
 		glDrawArrays( GL_TRIANGLES, 0, 6 );
 		glBindVertexArray( 0 );
-		offsetx += 0.1;
 
 		//Mage update
 		coreShader2.useShader();
@@ -162,7 +203,20 @@ void System::Run()
 		else if (teste == 2) teste = 3;
 		else teste = 1; 
 
-		delay(250);
+		if (offsetx >= 2147483647)
+		{
+			offsetx = 0.0;
+		}
+		else if (offsetx <= -2147483647)
+		{
+			offsetx = 0.0;
+		}
+		else
+		{
+			offsetx += 0.1;
+		}
+
+		//delay(300);
 		
 		glfwSwapBuffers( window );
 	}

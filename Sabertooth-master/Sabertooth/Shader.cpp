@@ -148,6 +148,53 @@ Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLf
 	this->mFltVertices[29] = this->mFltVertices[4];//y->top right
 }
 
+Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer, GLfloat pFltPosX, GLfloat pFltPosY) : Shader(pChrVertexPath, pChrFragmentPath)
+{
+	//monta os vertices do shader
+	this->mFltVertices[0] = pFltPosX + pFltWidth;			// x->top right
+	this->mFltVertices[1] = pFltPosY + pFltHeigth;		// y->top right
+	this->mFltVertices[2] = pFltLayer;				// z->top right
+
+	this->mFltVertices[5] = pFltPosX + pFltWidth;			// x->bottom right
+	this->mFltVertices[6] = pFltPosY;						// y->bottom right
+	this->mFltVertices[7] = pFltLayer;				// z->bottom right
+
+	this->mFltVertices[10] = pFltPosX;					// x->bottom left
+	this->mFltVertices[11] = pFltPosY;					// y->bottom left
+	this->mFltVertices[12] = pFltLayer;				// z->bottom left
+
+	this->mFltVertices[15] = this->mFltVertices[10];// x->bottom left
+	this->mFltVertices[16] = this->mFltVertices[11];// y->bottom left
+	this->mFltVertices[17] = this->mFltVertices[12];// z->bottom left
+
+	this->mFltVertices[20] = pFltPosX;					// x->top left
+	this->mFltVertices[21] = pFltPosY + pFltHeigth;		// y->top left
+	this->mFltVertices[22] = pFltLayer;				// z->top left
+
+	this->mFltVertices[25] = this->mFltVertices[0];	// x->top right
+	this->mFltVertices[26] = this->mFltVertices[1];	// y->top right
+	this->mFltVertices[27] = this->mFltVertices[2];	// z->top right
+
+	//monta a posições das texturas
+	this->mFltVertices[3] = 1.0f;				    //x->top right
+	this->mFltVertices[4] = 1.0f;				    //y->top right
+
+	this->mFltVertices[8] = 1.0f;				    // x->bottom right
+	this->mFltVertices[9] = 0.0f;				    // y->bottom right
+
+	this->mFltVertices[13] = 0.0f;				    // x->bottom left
+	this->mFltVertices[14] = 0.0f;				    // y->bottom left
+
+	this->mFltVertices[18] = this->mFltVertices[13];// x->bottom left
+	this->mFltVertices[19] = this->mFltVertices[14];// y->bottom left
+
+	this->mFltVertices[23] = 0.0f;				    // x->top left
+	this->mFltVertices[24] = 1.0f;				    // y->top left
+
+	this->mFltVertices[28] = this->mFltVertices[3];//x->top right
+	this->mFltVertices[29] = this->mFltVertices[4];//y->top right
+}
+
 bool Shader::bindVAO()
 {
 	try

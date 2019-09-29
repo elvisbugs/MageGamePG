@@ -33,8 +33,12 @@ private:
 
 public:
 	GLFWwindow* window;
+
 	Shader coreShader;
 	Shader coreShader2;
+	Shader ceu;
+	Shader nuvem;
+	Shader grama;
 
 public:
 	System();

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <map>
 #include "Texture.h"
+#include <glm/glm.hpp>
 
 
 class Shader
@@ -32,6 +33,7 @@ public:
 	Shader() { textureQtd = 0; }
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer);
+	Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer, GLfloat pFltPosX, GLfloat pFltPosY);
 
 	~Shader();
 
