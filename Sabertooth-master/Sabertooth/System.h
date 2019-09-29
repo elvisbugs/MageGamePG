@@ -34,11 +34,11 @@ private:
 public:
 	GLFWwindow* window;
 
-	Shader coreShader;
-	Shader coreShader2;
-	Shader ceu;
-	Shader nuvem;
-	Shader grama;
+	Shader mountains;
+	Shader mage;
+	Shader sky;
+	Shader clouds;
+	Shader grass;
 
 public:
 	System();

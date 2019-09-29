@@ -68,57 +68,61 @@ int System::OpenGLSetup()
 
 int System::SystemSetup()
 {
-	coreShader = Shader( "Shaders/Core/core.vert", "Shaders/Core/core.frag", 3.42, 2, -0.1f, -1.0, -0.7);
-	coreShader2 = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 1.76, 0.64, -1.0f);
-	ceu = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 2, 2, 0.0f, -1.0, -0.8);
-	nuvem = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 2, 0.33, -0.01f,-1.0,0.65);
-	grama = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 3.42, 2, -0.9f);
+	sky = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",        2.00f, 2.00f,  0.00f, -1.00f, -0.80f);
+	clouds = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",     2.00f, 0.33f, -0.10f, -1.00f,  0.65f);
+	mountains = Shader( "Shaders/Core/core.vert", "Shaders/Core/core.frag", 3.42f, 2.00f, -0.20f, -1.00f, -0.70f);
+	grass = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",      3.42f, 2.00f, -0.90f);
+	mage = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",       0.402f, 0.432f, -1.00f,  0.00f,  -0.75f, 0.059, 1);
+	
+	
 
-	coreShader.useShader();
-	coreShader2.useShader();
-	ceu.useShader();
-	nuvem.useShader();
-	grama.useShader();
+	mountains.useShader();
+	mage.useShader();
+	sky.useShader();
+	clouds.useShader();
+	grass.useShader();
 
 	return EXIT_SUCCESS;
 }
 
 void System::Run()
 {
-	//load grama
-	grama.useShader();
-	grama.loadTexture("bin/assets/Background/grama.png", "texture1", "layerGrama", true);
-	if (!grama.bindVAO())
+	//load grass
+	grass.useShader();
+	grass.loadTexture("bin/assets/Background/grass.png", "texture1", "grass", true);
+	if (!grass.bindVAO())
 		return;
 
-	//load nuvem
-	nuvem.useShader();
-	nuvem.loadTexture("bin/assets/Background/nuvens.png", "texture1", "layerNuvem", true);
-	if (!nuvem.bindVAO())
+	//load clouds
+	clouds.useShader();
+	clouds.loadTexture("bin/assets/Background/clouds.png", "texture1", "clouds", true);
+	if (!clouds.bindVAO())
 		return;
 
-	//load ceu
-	ceu.useShader();
-	ceu.loadTexture("bin/assets/Background/layer1.png", "texture1", "layer0", true);
-	if (!ceu.bindVAO())
+	//load sky
+	sky.useShader();
+	sky.loadTexture("bin/assets/Background/sky.png", "texture1", "sky", true);
+	if (!sky.bindVAO())
 		return;
 
 	//load mountains
-	coreShader.useShader();
-	coreShader.loadTexture( "bin/assets/Background/layer0.png", "texture1", "layer1", true );
-	if (!coreShader.bindVAO())
+	mountains.useShader();
+	mountains.loadTexture( "bin/assets/Background/mountains2.png", "texture1", "mountains", true );
+	if (!mountains.bindVAO())
 		return;
 	
 	//load mages
-	coreShader2.useShader();
-	coreShader2.loadTexture("bin/assets/Mage/mage_fire.png", "texture1", "mage_fire", false);
-	coreShader2.loadTexture("bin/assets/Mage/mage_water.png", "texture2", "mage_water", false);
-	coreShader2.loadTexture("bin/assets/Mage/mage_wind.png", "texture3", "mage_wind", false);
-	if (!coreShader2.bindVAO())
+	mage.useShader();
+	mage.loadTexture("bin/assets/Mage/mage_fire2.png", "texture1", "mage_fire", false);
+	mage.loadTexture("bin/assets/Mage/mage_water2.png", "texture2", "mage_water", false);
+	mage.loadTexture("bin/assets/Mage/mage_wind2.png", "texture3", "mage_wind", false);
+	if (!mage.bindVAO())
 		return;
 	
 	int teste = 1;
 	float offsetx = 0;
+
+	double offSetXMage = 0;
 
 	while ( !glfwWindowShouldClose( window ) ) {
 
@@ -136,72 +140,76 @@ void System::Run()
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 
-		//ceu update
-		ceu.useShader();
-		ceu.useTexture("layer0");
-		glBindVertexArray(ceu.getVAO());
+		//sky update
+		sky.useShader();
+		sky.useTexture("sky");
+		glBindVertexArray(sky.getVAO());
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
-		//grama update
-		grama.useShader();
-		glUniform1f(glGetUniformLocation(grama.getProgramId(), "offsetx"), offsetx);
-		grama.useTexture("layerGrama");
-		glBindVertexArray(grama.getVAO());
+		//grass update
+		grass.useShader();
+		glUniform1f(glGetUniformLocation(grass.getProgramId(), "offsetx"), offsetx);
+		grass.useTexture("grass");
+		glBindVertexArray(grass.getVAO());
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
-		//nuvem update
-		nuvem.useShader();
-		glUniform1f(glGetUniformLocation(nuvem.getProgramId(), "offsetx"), offsetx/100);
-		nuvem.useTexture("layerNuvem");
-		glBindVertexArray(nuvem.getVAO());
+		//clouds update
+		clouds.useShader();
+		glUniform1f(glGetUniformLocation(clouds.getProgramId(), "offsetx"), offsetx/100);
+		clouds.useTexture("clouds");
+		glBindVertexArray(clouds.getVAO());
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
 		//background update
-		coreShader.useShader();
-		glUniform1f(glGetUniformLocation(coreShader.getProgramId(), "offsetx"), offsetx/60);
-		coreShader.useTexture( "layer1" );
-		glBindVertexArray(coreShader.getVAO());
+		mountains.useShader();
+		glUniform1f(glGetUniformLocation(mountains.getProgramId(), "offsetx"), offsetx/60);
+		mountains.useTexture( "mountains" );
+		glBindVertexArray(mountains.getVAO());
 		glDrawArrays( GL_TRIANGLES, 0, 6 );
 		glBindVertexArray( 0 );
 
 		//Mage update
-		coreShader2.useShader();
+		mage.useShader();
 		
-		if (teste == 1) {
-			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
-			glUniform1i(textureActive, 1);
-			coreShader2.useTexture("mage_fire");
-			glBindVertexArray(coreShader2.getVAO());
+		/*if (teste == 1) {*/
+			GLuint textureActive = glGetUniformLocation(mage.getProgramId(), "textureActive");
+			glUniform1i(textureActive, 3);
+			glUniform1f(glGetUniformLocation(mage.getProgramId(), "offsetx"), offSetXMage);
+			mage.useTexture("mage_wind");
+			glBindVertexArray(mage.getVAO());
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glBindVertexArray(0);
-		}
+		//}
 
-		else if (teste == 2)
+		/*else if (teste == 2)
 		{
-			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
+			GLuint textureActive = glGetUniformLocation(mage.getProgramId(), "textureActive");
 			glUniform1i(textureActive, 2);
-			coreShader2.useTexture("mage_water");
-			glBindVertexArray(coreShader2.getVAO());
+			mage.useTexture("mage_water");
+			glBindVertexArray(mage.getVAO());
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glBindVertexArray(0);
 		}
 
 		else
 		{
-			GLuint textureActive = glGetUniformLocation(coreShader2.getProgramId(), "textureActive");
+			GLuint textureActive = glGetUniformLocation(mage.getProgramId(), "textureActive");
 			glUniform1i(textureActive, 3);
-			coreShader2.useTexture("mage_wind");
-			glBindVertexArray(coreShader2.getVAO());
+			mage.useTexture("mage_wind");
+			glBindVertexArray(mage.getVAO());
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glBindVertexArray(0);
-		}
+		}*/
 
 		if (teste == 1) teste = 2;
 		else if (teste == 2) teste = 3;
 		else teste = 1; 
+
+		if (offSetXMage >= 0.941176463) { offSetXMage = 0.058823529; }
+		else offSetXMage += 0.058823529;
 
 		if (offsetx >= 2147483647)
 		{
@@ -216,7 +224,7 @@ void System::Run()
 			offsetx += 0.1;
 		}
 
-		//delay(300);
+		delay(120);
 		
 		glfwSwapBuffers( window );
 	}
@@ -224,6 +232,10 @@ void System::Run()
 
 void System::Finish()
 {
-	coreShader.deleteShader();
+	mountains.deleteShader();
+	mage.deleteShader();
+	sky.deleteShader();
+	clouds.deleteShader();
+	grass.deleteShader();
 	glfwTerminate();
 }
