@@ -195,7 +195,7 @@ Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLf
 	this->mFltVertices[29] = this->mFltVertices[4];//y->top right
 }
 
-Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer, GLfloat pFltPosX, GLfloat pFltPosY, GLfloat pFltTexX, GLfloat pFltTexY) : Shader(pChrVertexPath, pChrFragmentPath)
+Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer, GLfloat pFltPosX, GLfloat pFltPosY, GLfloat pFltTexX) : Shader(pChrVertexPath, pChrFragmentPath)
 {
 	//monta os vertices do shader
 	this->mFltVertices[0] = pFltPosX + pFltWidth;			// x->top right
@@ -224,7 +224,7 @@ Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLf
 
 	//monta a posições das texturas
 	this->mFltVertices[3] = pFltTexX;				    //x->top right
-	this->mFltVertices[4] = pFltTexY;				    //y->top right
+	this->mFltVertices[4] = 1;				    //y->top right
 
 	this->mFltVertices[8] = pFltTexX;				    // x->bottom right
 	this->mFltVertices[9] = 0.0f;				    // y->bottom right
@@ -236,7 +236,7 @@ Shader::Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLf
 	this->mFltVertices[19] = this->mFltVertices[14];// y->bottom left
 
 	this->mFltVertices[23] = 0.0f;				    // x->top left
-	this->mFltVertices[24] = pFltTexY;				    // y->top left
+	this->mFltVertices[24] = 1;				    // y->top left
 
 	this->mFltVertices[28] = this->mFltVertices[3];//x->top right
 	this->mFltVertices[29] = this->mFltVertices[4];//y->top right

@@ -34,7 +34,7 @@ public:
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer);
 	Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer, GLfloat pFltPosX, GLfloat pFltPosY);
-	Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer, GLfloat pFltPosX, GLfloat pFltPosY, GLfloat pFltTexX, GLfloat pFltTexY);
+	Shader(const GLchar* pChrVertexPath, const GLchar* pChrFragmentPath, GLfloat pFltWidth, GLfloat pFltHeigth, GLfloat pFltLayer, GLfloat pFltPosX, GLfloat pFltPosY, GLfloat pFltTexX);
 
 	~Shader();
 
