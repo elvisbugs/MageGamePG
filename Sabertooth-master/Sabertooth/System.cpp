@@ -257,17 +257,17 @@ void System::Run()
 
 	//load mage Spell
 	mageSpell.useShader();
-	mageSpell.loadTexture("bin/assets/Attack/attack_fire2.png", "texture1", "attack_fire", false);
-	mageSpell.loadTexture("bin/assets/Attack/attack_water2.png", "texture2", "attack_water", false);
-	mageSpell.loadTexture("bin/assets/Attack/attack_wind2.png", "texture3", "attack_wind", false);
+	mageSpell.loadTexture("bin/assets/Attack/attack_fire.png", "texture1", "attack_fire", false);
+	mageSpell.loadTexture("bin/assets/Attack/attack_water.png", "texture2", "attack_water", false);
+	mageSpell.loadTexture("bin/assets/Attack/attack_wind.png", "texture3", "attack_wind", false);
 	if (!mageSpell.bindVAO())
 		return;
 
 	//load mage Spell 2
 	mageSpell2.useShader();
-	mageSpell2.loadTexture("bin/assets/Attack/attack_fire2.png", "texture1", "attack_fire2", false);
-	mageSpell2.loadTexture("bin/assets/Attack/attack_water2.png", "texture2", "attack_water2", false);
-	mageSpell2.loadTexture("bin/assets/Attack/attack_wind2.png", "texture3", "attack_wind2", false);
+	mageSpell2.loadTexture("bin/assets/Attack/attack_fire.png", "texture1", "attack_fire2", false);
+	mageSpell2.loadTexture("bin/assets/Attack/attack_water.png", "texture2", "attack_water2", false);
+	mageSpell2.loadTexture("bin/assets/Attack/attack_wind.png", "texture3", "attack_wind2", false);
 	if (!mageSpell2.bindVAO())
 		return;
 
