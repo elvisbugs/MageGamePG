@@ -9,7 +9,7 @@ System::~System()
 {
 }
 
-bool System::checkCollision(vec4 pVec1, vec4 pVec2)
+bool System::checkCollision(vec4 pVec1, float z1, vec4 pVec2, float z2)
 {
 	float x1Left  = pVec1.x;
 	float y1Left  = pVec1.y;
@@ -21,13 +21,20 @@ bool System::checkCollision(vec4 pVec1, vec4 pVec2)
 	float x2Right = pVec2.z;
 	float y2Right = pVec2.w;
 	
-	bool blnXResultleft = (x2Left >= x1Left & x2Left <= x1Right);
+	bool blnXResultleft =  (x2Left >= x1Left & x2Left <= x1Right);
 	bool blnXResultright = (x2Right >= x1Left & x2Right <= x1Right);
 
 	bool blnYResultleft =  (y2Left  >= y1Left & y2Left  <= y1Right);
 	bool blnYResultright = (y2Right >= y1Left & y2Right <= y1Right);
 
-	if ((blnXResultleft) || (blnXResultright))
+	roundFloat(z1);
+	roundFloat(z2);
+	float deltaZ = (z1 - z2);
+	if (deltaZ < 0) deltaZ *= -1;
+	roundFloat(deltaZ);
+	bool blnZResult = (deltaZ <= 0.2) ? true: false ;
+
+	if (((blnXResultleft && blnYResultleft) || (blnXResultright && blnYResultright)) && blnZResult)
 		return true;
 	else
 		return false;
@@ -157,18 +164,29 @@ int System::OpenGLSetup()
 
 int System::SystemSetup()
 {
-	sky = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 2.00f, 2.00f, 0.00f, -1.00f, -0.80f);
-	clouds = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 2.00f, 0.33f, -0.01f, -1.00f, 0.65f);
-	mountains = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 3.42f, 2.00f, -0.02f, -1.00f, -0.70f);
-	fence = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 3.42f, 2.00f, -0.03f);
-	grass = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", 3.42f, 2.00f, -0.04f);
+	sky = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",		2.00f, 2.00f,  0.00f, -1.00f, -0.80f);
+	clouds = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",		2.00f, 0.33f, -0.01f, -1.00f, 0.65f);
+	mountains = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",  3.42f, 2.00f, -0.02f, -1.00f, -0.70f);
+	fence = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",		3.42f, 2.00f, -0.03f);
+	grass = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag",		3.42f, 2.00f, -0.04f);
+
+	//lifebar
+	float lifeWidth = 0.1;
+	float lifeHeight = 0.025f;
+	float lifeOffSet = 0.25;
+	lifeBar = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", lifeWidth, lifeHeight, -1, -1, 2- lifeHeight, lifeOffSet);
+
+	float manaWidth = 0.1;
+	float manaHeight = 0.126;
+	float manaOffSet = 0.39;
+	manaBar = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", manaWidth, manaHeight, -1, -1, 2 - lifeHeight - manaHeight, manaOffSet);
 	
 	//mage creation
 	mageWidth = 0.402f;
 	mageHeigth = 0.432f;
 	float magePosX = 0.00f;
-	float magePosY = -0.75f;
-	float magePosZ = -1.00f;
+	float magePosY = rndFloat();
+	magePosZ = magePosY;
 	float mageOffSetTex = 0.059;
 	mage = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", mageWidth, mageHeigth, 0, 0, 0, mageOffSetTex);
 	createVecCoords(mVecMageCoords, magePosX, magePosY, mageWidth, mageHeigth);
@@ -177,8 +195,8 @@ int System::SystemSetup()
 	wolfWidth = 0.5184f;
 	wolfHeigth = 0.4968f;
 	float wolfPosX = 3.0f;
-	float wolfPosY = -0.75f;
-	float wolfPosZ = -1.00f;
+	float wolfPosY = rndFloat();
+	wolfPosZ = wolfPosY;
 	float wolfOffSetTex = 0.055f;
 	wolf = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", wolfWidth, wolfHeigth, 0, 0, 0, wolfOffSetTex);
 	createVecCoords(mVecWolfCoords, wolfPosX, wolfPosY, wolfWidth, wolfHeigth);
@@ -188,7 +206,7 @@ int System::SystemSetup()
 	mgSpellHeigth = 0.3f;
 	float mgSpellPosX = magePosX + mageWidth * 0.7f;
 	float mgSpellPosY = magePosY + mageHeigth * 0.25f;
-	float mgSpellPosZ = 0.00f;
+	mgSpellPosZ = 0.00f;
 	mageSpell = Shader("Shaders/Core/core.vert", "Shaders/Core/core.frag", mgSpellWidth, mgSpellHeigth, mgSpellPosZ, 0, 0);
 	createVecCoords(mVecMgSpell, mgSpellPosX, mgSpellPosY, mgSpellWidth, mgSpellHeigth);
 
@@ -211,6 +229,16 @@ int System::SystemSetup()
 
 void System::Run()
 {
+	lifeBar.useShader();
+	lifeBar.loadTexture("bin/assets/Background/lifeBar.png", "texture1", "life", false);
+	if (!lifeBar.bindVAO())
+		return;
+
+	manaBar.useShader();
+	manaBar.loadTexture("bin/assets/Background/mana.png", "texture1", "mana", false);
+	if (!manaBar.bindVAO())
+		return;
+
 	//load sky
 	sky.useShader();
 	sky.loadTexture("bin/assets/Background/sky.png", "texture1", "sky", true);
@@ -249,9 +277,11 @@ void System::Run()
 	if (!mage.bindVAO())
 		return;
 
-	//load mages
+	//load wolfes
 	wolf.useShader();
 	wolf.loadTexture("bin/assets/Wolf/wolf_fire.png", "texture1", "wolf_fire", false);
+	wolf.loadTexture("bin/assets/Wolf/wolf_water.png", "texture2", "wolf_water", false);
+	wolf.loadTexture("bin/assets/Wolf/wolf_wind.png", "texture3", "wolf_wind", false);
 	if (!wolf.bindVAO())
 		return;
 
@@ -278,9 +308,10 @@ void System::Run()
 	//mage vars
 	int intMageElement = 1;
 	double offSetXTexMage = 0;
-	double offSetPosMageX = mVecMageCoords.x, offSetPosMageY = mVecMageCoords.y, offSetPosMageZ = -1.0f;
-	double mageSpeedX = 0.02;
-	double mageSpeedY = 0.02;
+	double offSetPosMageX = mVecMageCoords.x, offSetPosMageY = mVecMageCoords.y, offSetPosMageZ = magePosZ;
+	double mageSpeedX = 0.02f;
+	double mageSpeedY = 0.02f;
+	float mageSpeedZ  = 0.1f;
 	bool blnCastSpell = false;
 	int intSpellCycle = 0;
 
@@ -289,21 +320,21 @@ void System::Run()
 
 	//Spell vars
 	int intSpellElement = 1;
-	double offSetPosSpellX = mVecMgSpell.x, offSetPosSpellY = mVecMgSpell.y, offSetPosSpellZ = 0.00f;
+	double offSetPosSpellX = mVecMgSpell.x, offSetPosSpellY = mVecMgSpell.y, offSetPosSpellZ = mgSpellPosZ;
 	double spellSpeedX = 0.02;
 	double spellSpeedY = 0.02;
 	bool blnSpellActive = false;
 
 	//Spell 2 vars
 	int intSpellElement2 = 1;
-	double offSetPosSpellX2 = mVecMgSpell2.x, offSetPosSpellY2 = mVecMgSpell2.y, offSetPosSpellZ2 = 0.00f;
+	double offSetPosSpellX2 = mVecMgSpell2.x, offSetPosSpellY2 = mVecMgSpell2.y, offSetPosSpellZ2 = mgSpellPosZ;
 	double spellSpeedX2 = 0.02;
 	double spellSpeedY2 = 0.02;
 	bool blnSpellActive2 = false;
 		
 	//wolf vars;
 	double offSetXTexWolf = 0;
-	double offSetPosWolfX = mVecWolfCoords.x , offSetPosWolfY = mVecWolfCoords.y, offSetPosWolfZ = -1.0f;
+	double offSetPosWolfX = mVecWolfCoords.x , offSetPosWolfY = mVecWolfCoords.y, offSetPosWolfZ = wolfPosZ;
 	double wolfSpeedX = mageSpeedX;
 	double wolfSpeedY = mageSpeedY;
 
@@ -325,9 +356,33 @@ void System::Run()
 		
 		glfwPollEvents();
 #pragma region Collision
-		if (checkCollision(mVecMageCoords, mVecWolfCoords))
+		if (checkCollision(mVecMageCoords, offSetPosMageZ,mVecWolfCoords, offSetPosWolfZ))
 		{
-			offSetPosMageZ = 0.0;
+			if (blnUpdateTexs) {
+				intCount++;
+				if (intCount == 3)
+					glfwSetWindowShouldClose(window, GLFW_TRUE);
+			}
+		}
+
+		if (blnSpellActive && checkCollision(mVecWolfCoords, offSetPosWolfZ, mVecMgSpell, offSetPosSpellZ))
+		{
+			offSetPosWolfZ = 0.0;
+
+			offSetPosWolfX = 6;
+			offSetPosWolfZ = rndFloat();
+			offSetPosWolfY = offSetPosWolfZ;
+			wolfElement = rand() % 3 + 1;
+		}
+
+		if (blnSpellActive2 && checkCollision(mVecWolfCoords, offSetPosWolfZ, mVecMgSpell2, offSetPosSpellZ2))
+		{
+			offSetPosWolfZ = 0.0;
+
+			offSetPosWolfX = 6;
+			offSetPosWolfZ = rndFloat();
+			offSetPosWolfY = offSetPosWolfZ;
+			wolfElement = rand() % 3 + 1;
 		}
 
 #pragma endregion
@@ -401,7 +456,10 @@ void System::Run()
 			{
 				//mage scrolling up
 				this->offSetIncrement(offSetPosMageY, mageSpeedX);
-				//this->changeCoords(mVecMageCoords, 0.0f, mageSpeedX);
+				if (offSetPosMageZ <= -0.5)
+				{
+					this->offSetIncrement(offSetPosMageZ, mageSpeedZ);
+				}
 			}
 			blnBtnPressed = true;
 		}
@@ -410,9 +468,13 @@ void System::Run()
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 			if (mVecMageCoords.y > -1.0f)
 			{
+				
 				//mage scrolling down
 				this->offSetDecrement(offSetPosMageY, mageSpeedX);
-				//this->changeCoords(mVecMageCoords, 0.0f, -mageSpeedX);
+				if (offSetPosMageZ >= -0.9)
+				{
+					this->offSetDecrement(offSetPosMageZ, mageSpeedZ);
+				}
 			}
 			blnBtnPressed = true;
 		}
@@ -473,6 +535,7 @@ void System::Run()
 					this->createVecCoords(mVecMgSpell2, 0.0f, 0.0f, 0.0f, 0.0f);
 					offSetPosSpellX2 = mVecMageCoords.x + mageWidth * 0.7f;
 					offSetPosSpellY2 = mVecMageCoords.y + mageHeigth * 0.25f;
+					offSetPosSpellZ2 = offSetPosMageZ;
 					blnSpellActive2 = true;
 					intSpellElement2 = intMageElement;
 				}
@@ -482,6 +545,7 @@ void System::Run()
 					this->createVecCoords(mVecMgSpell, 0.0f, 0.0f, 0.0f, 0.0f);
 					offSetPosSpellX = mVecMageCoords.x + mageWidth * 0.7f;
 					offSetPosSpellY = mVecMageCoords.y + mageHeigth * 0.25f;
+					offSetPosSpellZ = offSetPosMageZ;
 					blnSpellActive = true;
 					intSpellElement = intMageElement;
 				}				
@@ -571,7 +635,10 @@ void System::Run()
 		if (offSetPosWolfX <= -3.00f)
 		{
 			this->offSetIncrement(offSetPosWolfX, 6);
-			//this->changeCoords(mVecWolfCoords, 18, 0.0f);
+			offSetPosWolfZ = rndFloat();
+			offSetPosWolfY = offSetPosWolfZ;
+
+			wolfElement = rand() % 3 + 1;
 		}
 
 		//wolf scrolling <--
@@ -587,6 +654,19 @@ void System::Run()
 		sky.useShader();
 		sky.useTexture("sky");
 		glBindVertexArray(sky.getVAO());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
+		manaBar.useShader();
+		manaBar.useTexture("mana");
+		glBindVertexArray(lifeBar.getVAO());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
+		//sky update
+		lifeBar.useShader();
+		lifeBar.useTexture("life");
+		glBindVertexArray(lifeBar.getVAO());
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
@@ -652,16 +732,30 @@ void System::Run()
 
 		//Wolf update
 		wolf.useShader();
-		GLuint textureActive = glGetUniformLocation(wolf.getProgramId(), "textureActive");
-		glUniform1i(textureActive, 1);
+		if (wolfElement == 1) {
+			GLuint textureActive = glGetUniformLocation(wolf.getProgramId(), "textureActive");
+			glUniform1i(textureActive, 1);
+			wolf.useTexture("wolf_fire");
+		}
+		else if (wolfElement == 2)
+		{
+			GLuint textureActive = glGetUniformLocation(wolf.getProgramId(), "textureActive");
+			glUniform1i(textureActive, 2);
+			wolf.useTexture("wolf_water");
+		}
+		else
+		{
+			GLuint textureActive = glGetUniformLocation(wolf.getProgramId(), "textureActive");
+			glUniform1i(textureActive, 3);
+			wolf.useTexture("wolf_wind");
+		}
 		glUniform1f(glGetUniformLocation(wolf.getProgramId(), "offsetx"), offSetXTexWolf);
 		glUniform1f(glGetUniformLocation(wolf.getProgramId(), "offsetVSx"), offSetPosWolfX);
 		glUniform1f(glGetUniformLocation(wolf.getProgramId(), "offsetVSy"), offSetPosWolfY);
 		glUniform1f(glGetUniformLocation(wolf.getProgramId(), "offsetVSz"), offSetPosWolfZ);
-		wolf.useTexture("wolf_fire");
 		glBindVertexArray(wolf.getVAO());
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);
+		glBindVertexArray(0);		
 
 		//Spell update
 		mageSpell.useShader();
@@ -715,9 +809,10 @@ void System::Run()
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
-		if (offSetXTexWolf >= offSetWolfLimit) { offSetXTexWolf = offSetXWolfAmount; }
-		else offSetXTexWolf += offSetXWolfAmount;
-
+		if (blnUpdateTexs) {
+			if (offSetXTexWolf >= offSetWolfLimit) { offSetXTexWolf = offSetXWolfAmount; }
+			else offSetXTexWolf += offSetXWolfAmount;
+		}
 		glfwSwapBuffers(window);
 	}
 }
